@@ -1,0 +1,28 @@
+{
+    "Configurations":{
+        "NameSpace":"WebServices",
+        "Registered":[
+            {
+                "Id":"dataBaseManager",
+                "Class":"DataBaseManager",
+                "IncludePath": "Manager/DataBaseManager.h",
+                "Dependencies":["Magic::Config","Magic::TimingWheel"],
+                "FunctionPropertys":[]
+            },
+            {
+                "Id":"getUpdateServlet",
+                "Class":"GetUpdateServlet",
+                "IncludePath": "Servlet/GetUpdateServlet.h",
+                "Interface":"Magic::NetWork::Http::IHttpServlet",
+                "Dependencies":["DataBaseManager"],
+                "FunctionPropertys":[]
+            }
+        ],
+        "Initialize":[
+        ],
+        "Constructor":{
+            "Name":"Initialize",
+            "WithParameter": false
+        }
+    }
+}
