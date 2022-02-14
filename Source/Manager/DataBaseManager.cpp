@@ -121,7 +121,7 @@ void DataBaseManager::insertFromDeviceByMac(const std::string& mac, const Safe<D
     auto sqlConnection = m_DeviceConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt insertStmt(*sqlConnection);
-        insertStmt.prepare("INSERT INTO device(sn,mac,room_id,store_id,room_name,last_version,created_time,updated_time) VALUES (?,?,?,?,?,?,?,?,?)");
+        insertStmt.prepare("INSERT INTO device(sn,mac,room_id,store_id,room_name,last_version,created_time,updated_time) VALUES (?,?,?,?,?,?,?,?)");
         insertStmt.bind(0,deviceInfo->m_Sn);
         insertStmt.bind(1,deviceInfo->m_Mac);
         insertStmt.bind(2,deviceInfo->m_RoomId);
