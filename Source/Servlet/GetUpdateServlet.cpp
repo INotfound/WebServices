@@ -4,7 +4,7 @@
 #include <RapidJson/stringbuffer.h>
 
 GetUpdateServlet::GetUpdateServlet(const Safe<DataBaseManager>& dataBaseManager)
-    :Magic::NetWork::Http::IHttpServlet("/getVersion")
+    :Magic::NetWork::Http::IHttpServlet("/api/version/getVersion")
     ,m_DataBaseManager(dataBaseManager){
 }
 
