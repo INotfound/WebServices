@@ -33,7 +33,13 @@ set(MODULES
 set(SOURCES
     Source/Main.cpp
     Source/Manager/DataBaseManager.cpp
+
+    Source/Servlet/GetInfoServlet.cpp
+    Source/Servlet/ResourceServlet.cpp
     Source/Servlet/GetUpdateServlet.cpp
+    Source/Servlet/SetUpdateServlet.cpp
+    Source/Servlet/SetVersionServlet.cpp
+
 )
 
 add_custom_target(Gen ALL)

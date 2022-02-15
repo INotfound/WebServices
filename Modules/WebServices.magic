@@ -10,9 +10,41 @@
                 "FunctionPropertys":[]
             },
             {
+                "Id":"resourceServlet",
+                "Class":"ResourceServlet",
+                "IncludePath": "Servlet/ResourceServlet.h",
+                "Interface":"Magic::NetWork::Http::IHttpServlet",
+                "Dependencies":["Magic::Config"],
+                "FunctionPropertys":[]
+            },
+            {
+                "Id":"getInfoServlet",
+                "Class":"GetInfoServlet",
+                "IncludePath": "Servlet/GetInfoServlet.h",
+                "Interface":"Magic::NetWork::Http::IHttpServlet",
+                "Dependencies":["DataBaseManager"],
+                "FunctionPropertys":[]
+            },
+            {
+                "Id":"setVersionServlet",
+                "Class":"SetVersionServlet",
+                "IncludePath": "Servlet/SetVersionServlet.h",
+                "Interface":"Magic::NetWork::Http::IHttpServlet",
+                "Dependencies":["DataBaseManager"],
+                "FunctionPropertys":[]
+            },
+            {
                 "Id":"getUpdateServlet",
                 "Class":"GetUpdateServlet",
                 "IncludePath": "Servlet/GetUpdateServlet.h",
+                "Interface":"Magic::NetWork::Http::IHttpServlet",
+                "Dependencies":["DataBaseManager"],
+                "FunctionPropertys":[]
+            },
+            {
+                "Id":"setUpdateServlet",
+                "Class":"SetUpdateServlet",
+                "IncludePath": "Servlet/SetUpdateServlet.h",
                 "Interface":"Magic::NetWork::Http::IHttpServlet",
                 "Dependencies":["DataBaseManager"],
                 "FunctionPropertys":[]

@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <Magic/Magic>
 #include <Magic/Utilty/Config.h>
 #include <Magic/DataBase/MySql.h>
@@ -16,6 +17,7 @@ struct DeviceInfo{
 };
 
 struct VersionInfo{
+    bool m_Type;
     std::string m_Url;
     std::string m_Md5;
     std::string m_Version;
@@ -24,12 +26,17 @@ struct VersionInfo{
 class DataBaseManager{
 public:
     DataBaseManager(const Safe<Magic::Config>& config,const Safe<Magic::TimingWheel>& timingWheel);
-
     const Safe<VersionInfo> queryFromVersionByNewNormal();
+    void queryFromDeviceByAll(std::vector<DeviceInfo>& deviceInfos);
+    void queryFromVersionByAll(std::vector<VersionInfo>& versionInfos);
     const Safe<DeviceInfo> queryFromDeviceByMac(const std::string& mac);
     const Safe<VersionInfo> queryFromVersionByVersion(const std::string& version);
-    void updateFromDeviceByMac(const std::string& mac,const Safe<DeviceInfo>& deviceInfo);
+    bool updateFromDeviceByMac(const std::string& mac,const std::string& updateVersion);
+    void flushFromDeviceByMac(const std::string& mac,const Safe<DeviceInfo>& deviceInfo);
     void insertFromDeviceByMac(const std::string& mac,const Safe<DeviceInfo>& deviceInfo);
+    bool updateFromVersionByType(const std::string& oldVersion,const std::string& newVersion);
+    bool updateFromDeviceByStoreId(const std::string& storeId,const std::string& updateVersion);
+    bool updateFromDeviceByStoreIdAndSn(const std::string& sn,const std::string& storeId,const std::string& updateVersion);
 private:
     const Safe<Magic::DataBase::MySql> initialize();
 private:

@@ -76,7 +76,7 @@ bool GetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& http
         /// 数据库指定升级的目标版本
         updateVersion = deviceInfoResult->m_UpdateVersion;
 
-        m_DataBaseManager->updateFromDeviceByMac(deviceInfo->m_Mac,deviceInfo);
+        m_DataBaseManager->flushFromDeviceByMac(deviceInfo->m_Mac,deviceInfo);
     }else{
         m_DataBaseManager->insertFromDeviceByMac(deviceInfo->m_Mac,deviceInfo);
     }
