@@ -21,23 +21,19 @@ bool SetVersionServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& htt
 
 
     std::string updateVersion;
-    std::string currentVersion;
 
     if(doc.HasMember("updateVersion") && doc["updateVersion"].IsString()){
         updateVersion = doc["updateVersion"].GetString();
     }
 
-    if(doc.HasMember("currentVersion") && doc["currentVersion"].IsString()){
-        currentVersion = doc["currentVersion"].GetString();
-    }
 
-    if(updateVersion.empty() || currentVersion.empty()){
+    if(updateVersion.empty()){
         response->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed! Missing Key Value.\",\"data\":{}}");
         httpSocket->sendResponse(response);
         return true;
     }
 
-    if(m_DataBaseManager->updateFromVersionByType(currentVersion,updateVersion)){
+    if(m_DataBaseManager->updateFromVersionByType(updateVersion)){
         response->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
     }else{
         response->setBody("{\"return_code\":0,\"return_msg\":\"Failure\",\"data\":{}}");

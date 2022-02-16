@@ -26,7 +26,9 @@ struct VersionInfo{
 class DataBaseManager{
 public:
     DataBaseManager(const Safe<Magic::Config>& config,const Safe<Magic::TimingWheel>& timingWheel);
+
     const Safe<VersionInfo> queryFromVersionByNewNormal();
+    bool updateFromVersionByType(const std::string& version);
     void queryFromDeviceByAll(std::vector<DeviceInfo>& deviceInfos);
     void queryFromVersionByAll(std::vector<VersionInfo>& versionInfos);
     const Safe<DeviceInfo> queryFromDeviceByMac(const std::string& mac);
@@ -34,7 +36,6 @@ public:
     bool updateFromDeviceByMac(const std::string& mac,const std::string& updateVersion);
     void flushFromDeviceByMac(const std::string& mac,const Safe<DeviceInfo>& deviceInfo);
     void insertFromDeviceByMac(const std::string& mac,const Safe<DeviceInfo>& deviceInfo);
-    bool updateFromVersionByType(const std::string& oldVersion,const std::string& newVersion);
     bool updateFromDeviceByStoreId(const std::string& storeId,const std::string& updateVersion);
     bool updateFromDeviceByStoreIdAndSn(const std::string& sn,const std::string& storeId,const std::string& updateVersion);
 private:

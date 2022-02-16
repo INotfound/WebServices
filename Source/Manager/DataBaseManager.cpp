@@ -57,6 +57,25 @@ const Safe<VersionInfo> DataBaseManager::queryFromVersionByNewNormal(){
     return Safe<VersionInfo>();
 }
 
+bool DataBaseManager::updateFromVersionByType(const std::string& version){
+    auto sqlConnection = m_VersionConnectionPool->getConnection();
+    if(sqlConnection){
+        Magic::DataBase::MySqlStmt oldVersionStmt(*sqlConnection);
+        oldVersionStmt.prepare("UPDATE version SET type = 0 WHERE type = 1");
+        if(oldVersionStmt.execute()){
+            Magic::DataBase::MySqlStmt newVersionStmt(*sqlConnection);
+            newVersionStmt.prepare("UPDATE version SET type=? WHERE ver = ?");
+            newVersionStmt.bind(0,1);
+            newVersionStmt.bind(1,version);
+            if(newVersionStmt.execute()){
+                return true;
+            }
+        }
+        return false;
+    }
+    return false;
+}
+
 void DataBaseManager::queryFromDeviceByAll(std::vector<DeviceInfo>& deviceInfos){
     auto sqlConnection = m_DeviceConnectionPool->getConnection();
     if(sqlConnection){
@@ -195,26 +214,6 @@ void DataBaseManager::insertFromDeviceByMac(const std::string& mac, const Safe<D
     }
 }
 
-bool DataBaseManager::updateFromVersionByType(const std::string& oldVersion,const std::string& newVersion){
-    auto sqlConnection = m_VersionConnectionPool->getConnection();
-    if(sqlConnection){
-        Magic::DataBase::MySqlStmt oldVersionStmt(*sqlConnection);
-        oldVersionStmt.prepare("UPDATE version SET type=? WHERE ver = ?");
-        oldVersionStmt.bind(0,0);
-        oldVersionStmt.bind(1,oldVersion);
-        if(oldVersionStmt.execute()){
-            Magic::DataBase::MySqlStmt newVersionStmt(*sqlConnection);
-            oldVersionStmt.prepare("UPDATE version SET type=? WHERE ver = ?");
-            oldVersionStmt.bind(0,1);
-            oldVersionStmt.bind(1,newVersion);
-            if(oldVersionStmt.execute()){
-                return true;
-            }
-        }
-        return false;
-    }
-    return false;
-}
 bool DataBaseManager::updateFromDeviceByStoreId(const std::string &storeId, const std::string &updateVersion) {
     auto sqlConnection = m_DeviceConnectionPool->getConnection();
     if(sqlConnection){
