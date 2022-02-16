@@ -30,6 +30,7 @@ public:
     const Safe<VersionInfo> queryFromVersionByNewNormal();
     bool updateFromVersionByType(const std::string& version);
     void queryFromDeviceByAll(std::vector<DeviceInfo>& deviceInfos);
+    bool insertFromVersionByNew(const Safe<VersionInfo>& deviceInfo);
     void queryFromVersionByAll(std::vector<VersionInfo>& versionInfos);
     const Safe<DeviceInfo> queryFromDeviceByMac(const std::string& mac);
     const Safe<VersionInfo> queryFromVersionByVersion(const std::string& version);

@@ -48,6 +48,14 @@
                 "Interface":"Magic::NetWork::Http::IHttpServlet",
                 "Dependencies":["DataBaseManager"],
                 "FunctionPropertys":[]
+            },
+            {
+                "Id":"addVersionServlet",
+                "Class":"AddVersionServlet",
+                "IncludePath": "Servlet/AddVersionServlet.h",
+                "Interface":"Magic::NetWork::Http::IHttpServlet",
+                "Dependencies":["DataBaseManager"],
+                "FunctionPropertys":[]
             }
         ],
         "Initialize":[

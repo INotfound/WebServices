@@ -39,7 +39,7 @@ set(SOURCES
     Source/Servlet/GetUpdateServlet.cpp
     Source/Servlet/SetUpdateServlet.cpp
     Source/Servlet/SetVersionServlet.cpp
-
+    Source/Servlet/AddVersionServlet.cpp
 )
 
 add_custom_target(Gen ALL)

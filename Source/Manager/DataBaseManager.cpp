@@ -97,6 +97,31 @@ void DataBaseManager::queryFromDeviceByAll(std::vector<DeviceInfo>& deviceInfos)
     }
 }
 
+bool DataBaseManager::insertFromVersionByNew(const Safe<VersionInfo>& versionInfo){
+    auto sqlConnection = m_VersionConnectionPool->getConnection();
+    if(sqlConnection){
+        if(versionInfo->m_Type){
+            Magic::DataBase::MySqlStmt updateStmt(*sqlConnection);
+            updateStmt.prepare("UPDATE version SET type = 0 WHERE type = 1");
+            updateStmt.execute();
+        }
+        Magic::DataBase::MySqlStmt insertStmt(*sqlConnection);
+        insertStmt.prepare("INSERT INTO version(url,md5,ver,type,created_time,updated_time) VALUES (?,?,?,?,?,?)");
+        insertStmt.bind(0,versionInfo->m_Url);
+        insertStmt.bind(1,versionInfo->m_Md5);
+        insertStmt.bind(2,versionInfo->m_Version);
+        insertStmt.bind(3,versionInfo->m_Type ? 1 : 0);
+        insertStmt.bindTime(4,time(0));
+        insertStmt.bindTime(5,time(0));
+        if(insertStmt.execute()){
+            if(insertStmt.rows()>0){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void DataBaseManager::queryFromVersionByAll(std::vector<VersionInfo>& versionInfos){
     auto sqlConnection = m_VersionConnectionPool->getConnection();
     if(sqlConnection){
