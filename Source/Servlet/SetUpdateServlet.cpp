@@ -40,12 +40,6 @@ bool SetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& http
         updateVersion = doc["updateVersion"].GetString();
     }
 
-    if(updateVersion.empty()){
-        response->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed! Missing Key Value.\",\"data\":{}}");
-        httpSocket->sendResponse(response);
-        return true;
-    }
-
     if(!mac.empty()){
         if(m_DataBaseManager->updateFromDeviceByMac(mac,updateVersion)){
             response->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
