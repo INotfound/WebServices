@@ -29,17 +29,14 @@ CREATE TABLE IF NOT EXISTS `version`(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
  */
 
-DataBaseManager::DataBaseManager(const Safe<Magic::Config> &config,
-                                 const Safe<Magic::TimingWheel>& timingWheel)
+DataBaseManager::DataBaseManager(const Safe<Magic::Config> &config)
     :m_Config(config)
-    ,m_DeviceConnectionPool(std::make_shared<Magic::DataBase::ConnectionPool<Magic::DataBase::MySql>>(config,timingWheel))
-    ,m_VersionConnectionPool(std::make_shared<Magic::DataBase::ConnectionPool<Magic::DataBase::MySql>>(config,timingWheel)){
-    m_DeviceConnectionPool->initialize(std::bind(&DataBaseManager::initialize,this));
-    m_VersionConnectionPool->initialize(std::bind(&DataBaseManager::initialize,this));
+    ,m_ConnectionPool(std::make_shared<Magic::DataBase::ConnectionPool<Magic::DataBase::MySql>>(config)){
+    m_ConnectionPool->initialize(std::bind(&DataBaseManager::initialize,this));;
 }
 
 const Safe<VersionInfo> DataBaseManager::queryFromVersionByNewNormal(){
-    auto sqlConnection = m_VersionConnectionPool->getConnection();
+    auto sqlConnection = m_ConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt queryStmt(*sqlConnection);
         queryStmt.prepare("SELECT url,md5,ver,type FROM version WHERE type = 1");
@@ -58,7 +55,7 @@ const Safe<VersionInfo> DataBaseManager::queryFromVersionByNewNormal(){
 }
 
 bool DataBaseManager::updateFromVersionByType(const std::string& version){
-    auto sqlConnection = m_VersionConnectionPool->getConnection();
+    auto sqlConnection = m_ConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt oldVersionStmt(*sqlConnection);
         oldVersionStmt.prepare("UPDATE version SET type = 0 WHERE type = 1");
@@ -77,7 +74,7 @@ bool DataBaseManager::updateFromVersionByType(const std::string& version){
 }
 
 void DataBaseManager::queryFromDeviceByAll(std::vector<DeviceInfo>& deviceInfos){
-    auto sqlConnection = m_DeviceConnectionPool->getConnection();
+    auto sqlConnection = m_ConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt queryStmt(*sqlConnection);
         queryStmt.prepare("SELECT sn,mac,room_id,store_id,room_name,last_version,update_version FROM device");
@@ -98,8 +95,8 @@ void DataBaseManager::queryFromDeviceByAll(std::vector<DeviceInfo>& deviceInfos)
 }
 
 bool DataBaseManager::insertFromVersionByNew(const Safe<VersionInfo>& versionInfo){
-    auto sqlConnection = m_VersionConnectionPool->getConnection();
-    if(sqlConnection){
+    auto sqlConnection = m_ConnectionPool->getConnection();
+    if(sqlConnection && versionInfo){
         if(versionInfo->m_Type){
             Magic::DataBase::MySqlStmt updateStmt(*sqlConnection);
             updateStmt.prepare("UPDATE version SET type = 0 WHERE type = 1");
@@ -123,7 +120,7 @@ bool DataBaseManager::insertFromVersionByNew(const Safe<VersionInfo>& versionInf
 }
 
 void DataBaseManager::queryFromVersionByAll(std::vector<VersionInfo>& versionInfos){
-    auto sqlConnection = m_VersionConnectionPool->getConnection();
+    auto sqlConnection = m_ConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt queryStmt(*sqlConnection);
         queryStmt.prepare("SELECT url,md5,ver,type FROM version");
@@ -141,7 +138,7 @@ void DataBaseManager::queryFromVersionByAll(std::vector<VersionInfo>& versionInf
 }
 
 const Safe<DeviceInfo> DataBaseManager::queryFromDeviceByMac(const std::string& mac){
-    auto sqlConnection = m_DeviceConnectionPool->getConnection();
+    auto sqlConnection = m_ConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt queryStmt(*sqlConnection);
         queryStmt.prepare("SELECT sn,mac,room_id,store_id,room_name,last_version,update_version FROM device WHERE mac = ?");
@@ -164,7 +161,7 @@ const Safe<DeviceInfo> DataBaseManager::queryFromDeviceByMac(const std::string& 
 }
 
 const Safe<VersionInfo> DataBaseManager::queryFromVersionByVersion(const std::string &version) {
-    auto sqlConnection = m_VersionConnectionPool->getConnection();
+    auto sqlConnection = m_ConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt queryStmt(*sqlConnection);
         queryStmt.prepare("SELECT url,md5,ver,type FROM version WHERE ver = ?");
@@ -184,7 +181,7 @@ const Safe<VersionInfo> DataBaseManager::queryFromVersionByVersion(const std::st
 }
 
 bool DataBaseManager::updateFromDeviceByMac(const std::string &mac, const std::string &updateVersion) {
-    auto sqlConnection = m_DeviceConnectionPool->getConnection();
+    auto sqlConnection = m_ConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt updateStmt(*sqlConnection);
         updateStmt.prepare("UPDATE device SET update_version=? where mac = ?");
@@ -202,8 +199,8 @@ bool DataBaseManager::updateFromDeviceByMac(const std::string &mac, const std::s
 }
 
 void DataBaseManager::flushFromDeviceByMac(const std::string& mac,const Safe<DeviceInfo>& deviceInfo) {
-    auto sqlConnection = m_DeviceConnectionPool->getConnection();
-    if(sqlConnection){
+    auto sqlConnection = m_ConnectionPool->getConnection();
+    if(sqlConnection && deviceInfo){
         Magic::DataBase::MySqlStmt updateStmt(*sqlConnection);
         updateStmt.prepare("UPDATE device SET sn=?,mac=?,room_id=?,store_id=?,room_name=?,last_version=?,updated_time=? where mac = ?");
         updateStmt.bind(0,deviceInfo->m_Sn);
@@ -221,8 +218,8 @@ void DataBaseManager::flushFromDeviceByMac(const std::string& mac,const Safe<Dev
 }
 
 void DataBaseManager::insertFromDeviceByMac(const std::string& mac, const Safe<DeviceInfo>& deviceInfo) {
-    auto sqlConnection = m_DeviceConnectionPool->getConnection();
-    if(sqlConnection){
+    auto sqlConnection = m_ConnectionPool->getConnection();
+    if(sqlConnection && deviceInfo){
         Magic::DataBase::MySqlStmt insertStmt(*sqlConnection);
         insertStmt.prepare("INSERT INTO device(sn,mac,room_id,store_id,room_name,last_version,created_time,updated_time) VALUES (?,?,?,?,?,?,?,?)");
         insertStmt.bind(0,deviceInfo->m_Sn);
@@ -240,7 +237,7 @@ void DataBaseManager::insertFromDeviceByMac(const std::string& mac, const Safe<D
 }
 
 bool DataBaseManager::updateFromDeviceByStoreId(const std::string &storeId, const std::string &updateVersion) {
-    auto sqlConnection = m_DeviceConnectionPool->getConnection();
+    auto sqlConnection = m_ConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt updateStmt(*sqlConnection);
         updateStmt.prepare("UPDATE device SET update_version=? where store_id = ?");
@@ -259,7 +256,7 @@ bool DataBaseManager::updateFromDeviceByStoreId(const std::string &storeId, cons
 }
 
 bool DataBaseManager::updateFromDeviceByStoreIdAndSn(const std::string& sn,const std::string& storeId,const std::string& updateVersion){
-    auto sqlConnection = m_DeviceConnectionPool->getConnection();
+    auto sqlConnection = m_ConnectionPool->getConnection();
     if(sqlConnection){
         Magic::DataBase::MySqlStmt updateStmt(*sqlConnection);
         updateStmt.prepare("UPDATE device SET update_version=? where store_id = ? And sn = ?");

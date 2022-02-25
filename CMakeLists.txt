@@ -10,10 +10,8 @@ if(NOT DEFINED MAGIC)
 endif()
 
 include_directories(
-    ${MAGIC}
     ${MAGIC}/Include
-    ${CMAKE_BINARY_DIR}
-    ${PROJECT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/Include
     ${PROJECT_SOURCE_DIR}/Include
     ${MAGIC}/ThirdParty/Asio/Include
     ${MAGIC}/ThirdParty/RapidJSON/Include
@@ -45,6 +43,7 @@ set(SOURCES
 add_custom_target(Gen ALL)
 add_custom_command(
     TARGET Gen
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Include
     COMMAND ${MAGIC}/Bin/Gen ${MODULES} WebServices
 )
 

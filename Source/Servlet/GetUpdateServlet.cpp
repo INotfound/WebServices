@@ -11,7 +11,6 @@ GetUpdateServlet::GetUpdateServlet(const Safe<DataBaseManager>& dataBaseManager)
 bool GetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket,
                               const Safe<Magic::NetWork::Http::HttpRequest>& request,
                               const Safe<Magic::NetWork::Http::HttpResponse>& response){
-
     rapidjson::Document doc;
     response->setStatus(Magic::NetWork::Http::HttpStatus::OK);
     if(doc.Parse(request->getBody().c_str()).HasParseError()){

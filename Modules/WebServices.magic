@@ -6,7 +6,7 @@
                 "Id":"dataBaseManager",
                 "Class":"DataBaseManager",
                 "IncludePath": "Manager/DataBaseManager.h",
-                "Dependencies":["Magic::Config","Magic::TimingWheel"],
+                "Dependencies":["Magic::Config"],
                 "FunctionPropertys":[]
             },
             {

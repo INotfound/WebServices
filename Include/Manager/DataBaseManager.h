@@ -25,7 +25,7 @@ struct VersionInfo{
 
 class DataBaseManager{
 public:
-    DataBaseManager(const Safe<Magic::Config>& config,const Safe<Magic::TimingWheel>& timingWheel);
+    DataBaseManager(const Safe<Magic::Config>& config);
 
     const Safe<VersionInfo> queryFromVersionByNewNormal();
     bool updateFromVersionByType(const std::string& version);
@@ -43,6 +43,5 @@ private:
     const Safe<Magic::DataBase::MySql> initialize();
 private:
     Safe<Magic::Config> m_Config;
-    Safe<Magic::DataBase::ConnectionPool<Magic::DataBase::MySql>> m_DeviceConnectionPool;
-    Safe<Magic::DataBase::ConnectionPool<Magic::DataBase::MySql>> m_VersionConnectionPool;
+    Safe<Magic::DataBase::ConnectionPool<Magic::DataBase::MySql>> m_ConnectionPool;
 };
