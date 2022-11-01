@@ -18,14 +18,13 @@ include_directories(
 )
 
 link_directories(${MAGIC}/Lib)
-link_libraries(Magic mariadbclient)
 
 include(${MAGIC}/Magic.cmake)
 
 set(MODULES
-    ${MAGIC}/Modules/Magic.magic
-    ${MAGIC}/Modules/WebServer.magic
-    ${PROJECT_SOURCE_DIR}/Modules/WebServices.magic
+    ${MAGIC}/Modules/Magic.json
+    ${MAGIC}/Modules/WebServer.json
+    ${PROJECT_SOURCE_DIR}/Modules/WebServices.json
 )
 
 set(SOURCES
@@ -40,6 +39,8 @@ set(SOURCES
     Source/Servlet/AddVersionServlet.cpp
 )
 
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Include)
+
 add_custom_target(Gen ALL)
 add_custom_command(
     TARGET Gen
@@ -48,3 +49,5 @@ add_custom_command(
 )
 
 add_executable(WebServices ${SOURCES})
+
+target_link_libraries(WebServices Magic ${MAGIC_DEPEND_LIBRARY})

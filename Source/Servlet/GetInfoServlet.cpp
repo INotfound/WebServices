@@ -4,14 +4,11 @@
 #include <RapidJson/stringbuffer.h>
 
 GetInfoServlet::GetInfoServlet(const Safe<DataBaseManager>& dataBaseManager)
-    :Magic::NetWork::Http::IHttpServlet("/api/getInfo")
-    ,m_DataBaseManager(dataBaseManager){
+    :m_DataBaseManager(dataBaseManager){
 }
 
-bool GetInfoServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket,
-                              const Safe<Magic::NetWork::Http::HttpRequest>& request,
-                              const Safe<Magic::NetWork::Http::HttpResponse>& response){
-    response->setStatus(Magic::NetWork::Http::HttpStatus::OK);
+void GetInfoServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket){
+    httpSocket->getResponse()->setStatus(Magic::NetWork::Http::HttpStatus::OK);
     std::vector<DeviceInfo> deviceInfos;
     std::vector<VersionInfo> versionInfos;
     m_DataBaseManager->queryFromDeviceByAll(deviceInfos);
@@ -64,8 +61,7 @@ bool GetInfoServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSo
 
 
     writer.EndObject();
-    response->setBody(buffer.GetString());
-    httpSocket->sendResponse(response);
-    return true;
+    httpSocket->getResponse()->setBody(buffer.GetString());
+    httpSocket->sendResponse(httpSocket->getResponse());
 }
 

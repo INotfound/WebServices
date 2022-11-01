@@ -6,10 +6,7 @@
 class ResourceServlet :public Magic::NetWork::Http::IHttpServlet{
 public:
     ResourceServlet(const Safe<Magic::Config>& configuration);
-    bool handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket
-                ,const Safe<Magic::NetWork::Http::HttpRequest>& request
-                ,const Safe<Magic::NetWork::Http::HttpResponse>& response) override;
-
+    void handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket);
 private:
     std::string m_Directory;
 };

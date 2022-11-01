@@ -1,6 +1,5 @@
 {
     "Configurations":{
-        "NameSpace":"WebServices",
         "Registered":[
             {
                 "Id":"dataBaseManager",
@@ -59,10 +58,42 @@
             }
         ],
         "Initialize":[
-        ],
-        "Constructor":{
-            "Name":"Initialize",
-            "WithParameter": false
-        }
+            {
+                "Id": "resourceServlet",
+                "InvokeFunctions": {
+                    "addMatchRoute": ["\"^/?(.*)$\"","&ResourceServlet::handle"]
+                }
+            },
+            {
+                "Id": "getUpdateServlet",
+                "InvokeFunctions": {
+                    "addRoute": ["\"/api/version/getVersion\"","&GetUpdateServlet::handle"]
+                }
+            },
+            {
+                "Id": "setUpdateServlet",
+                "InvokeFunctions": {
+                    "addRoute": ["\"/api/version/setUpdate\"","&SetUpdateServlet::handle"]
+                }
+            },
+            {
+                "Id": "setVersionServlet",
+                "InvokeFunctions": {
+                    "addRoute": ["\"/api/version/setVersion\"","&SetVersionServlet::handle"]
+                }
+            },
+            {
+                "Id": "getInfoServlet",
+                "InvokeFunctions": {
+                    "addRoute": ["\"/api/getInfo\"","&GetInfoServlet::handle"]
+                }
+            },
+            {
+                "Id": "addVersionServlet",
+                "InvokeFunctions": {
+                    "addRoute": ["\"/api/version/addVersion\"","&AddVersionServlet::handle"]
+                }
+            }
+        ]
     }
 }

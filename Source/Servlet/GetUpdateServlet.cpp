@@ -4,19 +4,16 @@
 #include <RapidJson/stringbuffer.h>
 
 GetUpdateServlet::GetUpdateServlet(const Safe<DataBaseManager>& dataBaseManager)
-    :Magic::NetWork::Http::IHttpServlet("/api/version/getVersion")
-    ,m_DataBaseManager(dataBaseManager){
+    :m_DataBaseManager(dataBaseManager){
 }
 
-bool GetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket,
-                              const Safe<Magic::NetWork::Http::HttpRequest>& request,
-                              const Safe<Magic::NetWork::Http::HttpResponse>& response){
+void GetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket){
     rapidjson::Document doc;
-    response->setStatus(Magic::NetWork::Http::HttpStatus::OK);
-    if(doc.Parse(request->getBody().c_str()).HasParseError()){
-        response->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed!\",\"data\":{}}");
-        httpSocket->sendResponse(response);
-        return true;
+    httpSocket->getResponse()->setStatus(Magic::NetWork::Http::HttpStatus::OK);
+    if(doc.Parse(httpSocket->getRequest()->getBody().c_str()).HasParseError()){
+        httpSocket->getResponse()->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed!\",\"data\":{}}");
+        httpSocket->sendResponse(httpSocket->getResponse());
+        return;
     }
     Safe<DeviceInfo> deviceInfo = std::make_shared<DeviceInfo>();
 
@@ -45,9 +42,9 @@ bool GetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& http
     }
 
     if(deviceInfo->m_Mac.empty() || deviceInfo->m_Version.empty()){
-        response->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed!\",\"data\":{}}");
-        httpSocket->sendResponse(response);
-        return true;
+        httpSocket->getResponse()->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed!\",\"data\":{}}");
+        httpSocket->sendResponse(httpSocket->getResponse());
+        return;
     }
     std::string updateVersion;
 
@@ -87,17 +84,17 @@ bool GetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& http
         if(normalVersionInfo && deviceInfo->m_Version != normalVersionInfo->m_Version){
             versionInfo = std::move(normalVersionInfo);
         }else{
-            response->setBody("{\"return_code\":1,\"return_msg\":\"Ok\",\"data\":{}}");
-            httpSocket->sendResponse(response);
-            return true;
+            httpSocket->getResponse()->setBody("{\"return_code\":1,\"return_msg\":\"Ok\",\"data\":{}}");
+            httpSocket->sendResponse(httpSocket->getResponse());
+            return;
         }
     }else{
         if(updateVersion != deviceInfo->m_Version){
             versionInfo = m_DataBaseManager->queryFromVersionByVersion(updateVersion);
         }else{
-            response->setBody("{\"return_code\":1,\"return_msg\":\"Ok\",\"data\":{}}");
-            httpSocket->sendResponse(response);
-            return true;
+            httpSocket->getResponse()->setBody("{\"return_code\":1,\"return_msg\":\"Ok\",\"data\":{}}");
+            httpSocket->sendResponse(httpSocket->getResponse());
+            return;
         }
     }
 
@@ -121,11 +118,11 @@ bool GetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& http
         writer.String(versionInfo->m_Version.c_str());
         writer.EndObject();
         writer.EndObject();
-        response->setBody(stringBuffer.GetString());
+        httpSocket->getResponse()->setBody(stringBuffer.GetString());
     }else{
-        response->setBody("{\"return_code\":1,\"return_msg\":\"Ok\",\"data\":{}}");
+        httpSocket->getResponse()->setBody("{\"return_code\":1,\"return_msg\":\"Ok\",\"data\":{}}");
     }
-    httpSocket->sendResponse(response);
-    return true;
+    httpSocket->sendResponse(httpSocket->getResponse());
+    return;
 }
 

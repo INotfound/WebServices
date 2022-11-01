@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv){
     Magic::Thread::SetName("Main");
-    const Safe<Magic::Container> ioc = WebServices::Initialize();
-    ioc->resolve<Magic::NetWork::Http::HttpServer>()->run();
+    Safe<Magic::Application> application = std::make_shared<Magic::Application>();
+    application->initialize();
     return EXIT_SUCCESS;
 }

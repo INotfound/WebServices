@@ -9,9 +9,7 @@
 class GetInfoServlet :public Magic::NetWork::Http::IHttpServlet{
 public:
     GetInfoServlet(const Safe<DataBaseManager>& dataBaseManager);
-    bool handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket
-                ,const Safe<Magic::NetWork::Http::HttpRequest>& request
-                ,const Safe<Magic::NetWork::Http::HttpResponse>& response) override;
+    void handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket);
 
 private:
      Safe<DataBaseManager> m_DataBaseManager;

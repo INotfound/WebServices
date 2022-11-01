@@ -4,19 +4,16 @@
 #include <RapidJson/stringbuffer.h>
 
 SetUpdateServlet::SetUpdateServlet(const Safe<DataBaseManager>& dataBaseManager)
-    :Magic::NetWork::Http::IHttpServlet("/api/version/setUpdate")
-    ,m_DataBaseManager(dataBaseManager){
+    :m_DataBaseManager(dataBaseManager){
 }
 
-bool SetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket,
-                              const Safe<Magic::NetWork::Http::HttpRequest>& request,
-                              const Safe<Magic::NetWork::Http::HttpResponse>& response){
+void SetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket){
     rapidjson::Document doc;
-    response->setStatus(Magic::NetWork::Http::HttpStatus::OK);
-    if(doc.Parse(request->getBody().c_str()).HasParseError()){
-        response->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed!\",\"data\":{}}");
-        httpSocket->sendResponse(response);
-        return true;
+    httpSocket->getResponse()->setStatus(Magic::NetWork::Http::HttpStatus::OK);
+    if(doc.Parse(httpSocket->getRequest()->getBody().c_str()).HasParseError()){
+        httpSocket->getResponse()->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed!\",\"data\":{}}");
+        httpSocket->sendResponse(httpSocket->getResponse());
+        return;
     }
 
     std::string sn;
@@ -42,27 +39,26 @@ bool SetUpdateServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& http
 
     if(!mac.empty()){
         if(m_DataBaseManager->updateFromDeviceByMac(mac,updateVersion)){
-            response->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
-            httpSocket->sendResponse(response);
-            return true;
+            httpSocket->getResponse()->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
+            httpSocket->sendResponse(httpSocket->getResponse());
+            return;
         }
     }else if(!storeId.empty()){
         if(sn.empty()){
             if(m_DataBaseManager->updateFromDeviceByStoreId(storeId,updateVersion)){
-                response->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
-                httpSocket->sendResponse(response);
-                return true;
+                httpSocket->getResponse()->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
+                httpSocket->sendResponse(httpSocket->getResponse());
+                return;
             }
         }else{
             if(m_DataBaseManager->updateFromDeviceByStoreIdAndSn(sn,storeId,updateVersion)){
-                response->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
-                httpSocket->sendResponse(response);
-                return true;
+                httpSocket->getResponse()->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
+                httpSocket->sendResponse(httpSocket->getResponse());
+                return;
             }
         }
     }
-    response->setBody("{\"return_code\":0,\"return_msg\":\"Failure\",\"data\":{}}");
-    httpSocket->sendResponse(response);
-    return true;
+    httpSocket->getResponse()->setBody("{\"return_code\":0,\"return_msg\":\"Failure\",\"data\":{}}");
+    httpSocket->sendResponse(httpSocket->getResponse());
 }
 

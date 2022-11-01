@@ -4,19 +4,16 @@
 #include <RapidJson/stringbuffer.h>
 
 AddVersionServlet::AddVersionServlet(const Safe<DataBaseManager>& dataBaseManager)
-    :Magic::NetWork::Http::IHttpServlet("/api/version/addVersion")
-    ,m_DataBaseManager(dataBaseManager){
+    :m_DataBaseManager(dataBaseManager){
 }
 
-bool AddVersionServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket,
-                              const Safe<Magic::NetWork::Http::HttpRequest>& request,
-                              const Safe<Magic::NetWork::Http::HttpResponse>& response){
+void AddVersionServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& httpSocket){
     rapidjson::Document doc;
-    response->setStatus(Magic::NetWork::Http::HttpStatus::OK);
-    if(doc.Parse(request->getBody().c_str()).HasParseError()){
-        response->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed!\",\"data\":{}}");
-        httpSocket->sendResponse(response);
-        return true;
+    httpSocket->getResponse()->setStatus(Magic::NetWork::Http::HttpStatus::OK);
+    if(doc.Parse(httpSocket->getRequest()->getBody().c_str()).HasParseError()){
+        httpSocket->getResponse()->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed!\",\"data\":{}}");
+        httpSocket->sendResponse(httpSocket->getResponse());
+        return;
     }
 
     Safe<VersionInfo> info = std::make_shared<VersionInfo>();
@@ -39,17 +36,17 @@ bool AddVersionServlet::handle(const Safe<Magic::NetWork::Http::HttpSocket>& htt
     }
 
     if(info->m_Url.empty() || info->m_Md5.empty() || info->m_Version.empty()){
-        response->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed! Missing Key Value.\",\"data\":{}}");
-        httpSocket->sendResponse(response);
-        return true;
+        httpSocket->getResponse()->setBody("{\"return_code\":0,\"return_msg\":\"Request Json Parse Failed! Missing Key Value.\",\"data\":{}}");
+        httpSocket->sendResponse(httpSocket->getResponse());
+        return;
     }
 
     if(m_DataBaseManager->insertFromVersionByNew(info)){
-        response->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
+        httpSocket->getResponse()->setBody("{\"return_code\":1,\"return_msg\":\"Succeed\",\"data\":{}}");
     }else{
-        response->setBody("{\"return_code\":0,\"return_msg\":\"Failure\",\"data\":{}}");
+        httpSocket->getResponse()->setBody("{\"return_code\":0,\"return_msg\":\"Failure\",\"data\":{}}");
     }
-    httpSocket->sendResponse(response);
-    return true;
+    httpSocket->sendResponse(httpSocket->getResponse());
+    return;
 }
 
